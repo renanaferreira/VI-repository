@@ -33,14 +33,13 @@ function drawChart( )
 {
 
 	// Create the data table.
-	var data = new google.visualization.DataTable( );
+	var data = new google.visualization.arrayToDataTable([
+		
+	]);
 
 
 	// First column
 	data.addColumn('string', 'Curricular year');
-
-	// Second column
-	data.addColumn('number', 'Number of Students');
 
 	data.addRows([
 				['1st year', 79],
