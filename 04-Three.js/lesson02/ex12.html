@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="https://threejs.org/build/three.js"></script>
+		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script type="module" src="materials.js"></script>
+		<script type="module">
+			/*
+			Table of materials
+			*/
+			import {redTransparent, blueBasicMaterial, redBasicMaterial, greenBasicMaterial} from "./materials.js";
+
+			const glassMaterial = new THREE.MeshPhongMaterial( { 
+				color: 0x222222, 
+				specular: 0xFFFFFF,
+				shininess: 100, 
+				opacity: 0.3, 
+				transparent: true 
+			} );
+
+			const blueTransparent = new THREE.MeshPhongMaterial({ 
+				color: 0x0000FF,
+				shininess: 100,
+				opacity: 0.3,
+				transparent: true,
+			});
+
+			const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            const renderer = new THREE.WebGLRenderer();
+			const controls = new THREE.OrbitControls(camera, renderer.domElement);
+			
+			
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+			window.addEventListener('resize', function() {
+				const width = window.innerWidth;
+				const height = window.innerHeight;
+				renderer.setSize( width, height );
+				camera.aspect = width / height;
+				camera.updateProjectionMatrix();
+			});
+			camera.position.z = 5;
+			
+			const car = new THREE.Object3D();
+
+			const radius = 0.5;
+			const degrees90 = Math.PI / 2;
+
+            var geometry = new THREE.BoxGeometry(1, 1, 1);
+			const rectangle = new THREE.Mesh( geometry, blueTransparent );
+			rectangle.scale.set(2,1,4);
+			rectangle.position.set(0,0,0);
+			car.add( rectangle );
+
+			const axis = new THREE.Object3D();
+			geometry = new THREE.CylinderGeometry(0.1,0.1,2,30);
+
+			const axisX = new THREE.Mesh( geometry, redBasicMaterial );
+			axisX.position.x = 1;
+			axisX.rotation.z = Math.PI / 2;
+			axis.add(axisX);
+
+			const axisY = new THREE.Mesh( geometry, greenBasicMaterial );
+			axisY.position.y = 1;
+			axis.add(axisY);
+
+			const axisZ = new THREE.Mesh( geometry, blueBasicMaterial );
+			axisZ.position.z = 1;
+			axisZ.rotation.x = Math.PI / 2;
+			axis.add(axisZ);
+
+			const axesHelper = new THREE.AxesHelper( 5 );
+			scene.add(axesHelper);
+
+
+			geometry = new THREE.CylinderGeometry(radius,radius,0.2,30);
+			
+			const cylinder01 = new THREE.Mesh( geometry, redTransparent );
+			cylinder01.position.set(-1, -0.5, -2);
+			cylinder01.rotation.z = degrees90;
+			car.add( cylinder01 );
+
+			const cylinder02 = new THREE.Mesh( geometry, redTransparent );
+			cylinder02.position.set(1, -0.5, -2);
+			cylinder02.rotation.z = degrees90;
+			car.add( cylinder02 );
+
+			const cylinder03 = new THREE.Mesh( geometry, redTransparent );
+			cylinder03.position.set(-1, -0.5, 2);
+			cylinder03.rotation.z = degrees90;
+			car.add( cylinder03 );
+
+			const cylinder04 = new THREE.Mesh( geometry, redTransparent );
+			cylinder04.position.set(1, -0.5, 2);
+			cylinder04.rotation.z = degrees90;
+			car.add( cylinder04 );
+
+			console.log(rectangle.matrix);
+			//[2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1]
+			// scale_x, 3x0, scale_y, 3x0, scale_z, 0, translation_vector(from O), 1
+			console.log(rectangle.matrixWorld);
+			console.log(rectangle.modelViewMatrix);
+
+			console.log("------------");
+
+			console.log(cylinder01.matrix);
+			//[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -1, -0.5, -2, 1]
+			// scale_x, 3x0, scale_y, 3x0, scale_z, 0, translation_vector(from O), 1
+			console.log(cylinder01.matrixWorld);
+			console.log(cylinder01.modelViewMatrix);
+
+			console.log("------------");
+
+			console.log(car.matrix);
+			console.log(car.matrixWorld);
+			console.log(car.modelViewMatrix);
+			// # TODO Investigate how Matrix4 work to transform objects;
+			
+			scene.add( axis );
+			scene.add( car );
+
+			const light = new THREE.DirectionalLight(0xffffff, 1.0);
+			light.position.set(0,5,0);
+			scene.add( light );
+
+			const alight = new THREE.AmbientLight(0xffffff);
+			scene.add(alight);			
+
+			geometry = new THREE.SphereGeometry(0.1, 10, 10);
+			const referencePoint = new THREE.Mesh( geometry, redBasicMaterial );
+			referencePoint.position.z = -1;
+			scene.add(referencePoint);
+
+			//https://stackoverflow.com/questions/42812861/three-js-pivot-point/42866733#42866733
+			const moveCarAround = function() {
+				var theta = 0.01;
+				var rotatinPoint = new THREE.Vector3(0,0,-1);
+				var rotatinAxis = new THREE.Vector3(0,1,0);
+
+				//Converts the vector from this object's local space to world space.
+				car.parent.localToWorld(car.position);
+
+				// Substracts car.position by rotatinPoint
+				car.position.sub(rotatinPoint);
+
+				//Applies a rotation specified by an axis and an angle to this vector.
+				car.position.applyAxisAngle(rotatinAxis, theta);
+
+				// Adds car.position by rotatinPoint (returns to original position)
+				car.position.add(rotatinPoint);
+
+				//Converts the vector from world space to this object's local space.
+				car.parent.worldToLocal(car.position);
+
+				//Rotate an object along an axis in object space.
+				car.rotateOnAxis(rotatinAxis, theta);
+			};
+
+
+            function animate() {
+	            requestAnimationFrame( animate );
+				moveCarAround();
+				controls.update();
+	            renderer.render( scene, camera );
+            }
+
+            animate();
+
+		</script>
+	</body>
+</html>

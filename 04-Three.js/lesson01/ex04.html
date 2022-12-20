@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="https://threejs.org/build/three.js"></script>
+		<script>
+			const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor(new THREE.Color( 0x000000 ));
+            document.body.appendChild( renderer.domElement );
+
+			//////////////
+			// Triangle 01
+			//////////////
+			var vertices = new Float32Array( [
+				0.0,  0.0,  0.0,
+				0.5,  0.75, 0.0,
+				1.0,  0.0,  0.0,
+			] );
+			var geometry = new THREE.BufferGeometry();
+			geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            var geometryMaterial = new THREE.MeshBasicMaterial( {color: 0xA020F0, side: THREE.DoubleSide} );
+            var triangle01 = new THREE.Mesh( geometry, geometryMaterial );
+            scene.add( triangle01 );
+
+			//////////////
+			// Triangle 02
+			//////////////
+			vertices = new Float32Array( [
+				0.0,  0.0,  0.0,
+				-0.35,-1.0,  0.0,
+				-0.7,  0.25, 0.0,
+			] );
+			geometry = new THREE.BufferGeometry();
+			geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            geometryMaterial = new THREE.MeshBasicMaterial( {color: 0xFFFF00,side: THREE.DoubleSide} );
+            const triangle02 = new THREE.Mesh( geometry, geometryMaterial );
+            scene.add( triangle02 );
+
+			//////////////
+			// Triangle 02
+			//////////////
+			vertices = new Float32Array( [
+				-0.2, 0.15, 0.0,
+				0.35, 0.65, 0.0,
+				-0.85, 0.9,  0.0,
+			] );
+			colors = new Uint8Array( [
+	 			255,  0,  0,
+	 			0,  255,  0,  
+	 			0,  0,  255,  
+			] );
+			geometry = new THREE.BufferGeometry();
+			geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+			geometry.setAttribute( 'color', new THREE.BufferAttribute( colors, 3, true) );
+            geometryMaterial = new THREE.MeshBasicMaterial( {vertexColors: true,side: THREE.DoubleSide} );
+            const triangle03 = new THREE.Mesh( geometry, geometryMaterial );
+            scene.add( triangle03 );
+
+			//////////////
+			// Triangle 04
+			//////////////
+			geometry = new THREE.BufferGeometry();
+			vertices = new Float32Array( [
+				0.15,-0.95, 0.0,
+				0.90,-0.7,  0.0,
+				0.65, 0.10, 0.0,
+			] );
+			geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+            geometryMaterial = new THREE.MeshBasicMaterial( {color: 0xfce5cd,side: THREE.DoubleSide, wireframe: true} );
+            const triangle04 = new THREE.Mesh( geometry, geometryMaterial );
+            scene.add( triangle04 );
+			
+
+            camera.position.z = 5;
+
+            function animate() {
+	            requestAnimationFrame( animate );
+                //cube.rotation.x += 0.01;
+                //cube.rotation.y += 0.01;
+	            renderer.render( scene, camera );
+            }
+
+            animate();
+
+		</script>
+	</body>
+</html>

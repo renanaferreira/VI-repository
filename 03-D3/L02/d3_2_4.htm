@@ -21,7 +21,9 @@
         let rects = svg.selectAll("rect")
             .data(dataset)
             .join("rect")
-                .transition.delay(function(d, i) { return i * 10; })
+                .transition()
+                .delay(function(d, i) { return i * 10; })
+                .duration(1000)
                 .attr("x", function(d,i) {
                     return i * (w / dataset.length);
                 })
@@ -44,7 +46,9 @@
             .text(function (d) {
                 return d;
             })
-            .transition.delay(function(d, i) { return i * 10; })
+            .transition()
+            .delay(function(d, i) { return i * 10; })
+            .duration(1000)
             .attr("x", function (d, i) {
                 return i * (w / dataset.length) + (w / dataset.length)/2;
             })
@@ -54,9 +58,9 @@
             .attr("stroke","white")
             .attr("text-anchor", "middle");
         
-            rects.on("click", function(e, d) { // event, data
-                console.log("The value is "+ d);
-            });
+        rects.on("click", function(e, d) { // event, data
+            console.log("The value is "+ d);
+        });
         
         d3.select("body").append("button")
             .attr("id","sort_button")
@@ -77,10 +81,10 @@
 				        return d3.descending(a, b);
 			        }
 		        })
-                .transition().duration(function(d, i) { return i * 10; })
 		        .attr("x", function(d, i) {
     		        return i * (w / dataset.length);
 		        });
+            
             svg.selectAll("text")
                 .sort(function(a, b) {
 			        if (sortOrder) {
@@ -89,15 +93,17 @@
 				        return d3.descending(a, b);
 			        }
 		        })
-                .transition.delay(function(d, i) { return i * 10; })
                 .attr("x", function(d, i) {
     		        return i * (w / dataset.length) + (w / dataset.length)/2;
 		        });
         };
 
-        d3.select("#sort_button").on("click", function(e,d) {
+        d3.select("#sort_button")
+        .on("click", function(e,d) {
             sortBars();
         });
+
+        <!-- TODO Check on in transition and selection -->
 
         
     </script>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>My first three.js app</title>
+	<style>
+		body { margin: 0; }
+	</style>
+</head>
+<body>
+<script src="https://threejs.org/build/three.js"></script>
+<script>
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	const renderer = new THREE.WebGLRenderer();
+
+	window.addEventListener('resize', function() {
+		const width = window.innerWidth;
+		const height = window.innerHeight;
+		renderer.setSize( width, height );
+		camera.aspect = width / height;
+		camera.updateProjectionMatrix();
+	});
+
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setClearColor(new THREE.Color( 0x000000 ));
+	document.body.appendChild( renderer.domElement );
+
+	//////////////
+	// Path (Extra)
+	// Source: threejs.org/docs/index.html#api/en/extras/core/Path
+	//////////////
+	const path = new THREE.Path();
+
+	path.lineTo( 0, 0.8 );
+	path.quadraticCurveTo( 0, 1, 0.2, 1 );
+	path.lineTo( 1, 1 );
+
+	var geometry = new THREE.BufferGeometry().setFromPoints( path.getPoints() );
+	var material = new THREE.LineBasicMaterial( { color: 0x0DA336 } );
+
+	const line = new THREE.Line( geometry, material );
+	scene.add( line );
+
+	//////////////
+	// Lathe Object
+	// https://threejs.org/docs/index.html#api/en/geometries/LatheGeometry
+	//////////////
+	var points = [];
+	for ( let i = 0; i < 10; i ++ ) {
+		points.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 10 + 5, ( i - 5 ) * 2 ) );
+	}
+	geometry = new THREE.LatheGeometry( points );
+	material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
+	const lathe = new THREE.Mesh( geometry, material );
+	scene.add( lathe );
+
+	//////////////
+	// Bezier Curve
+	// https://threejs.org/docs/index.html#api/en/extras/curves/CubicBezierCurve
+	//////////////
+	const curve = new THREE.QuadraticBezierCurve(
+			new THREE.Vector2( -1, 0 ),
+			new THREE.Vector2( 2, 1.5 ),
+			new THREE.Vector2( 1, 0 )
+	);
+
+	points = curve.getPoints();
+	geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+	material = new THREE.LineBasicMaterial( { color: 0xff0000, side:  THREE.DoubleSide} );
+
+	// Create the final object to add to the scene
+	const curveObject = new THREE.Line( geometry, material );
+	scene.add(curveObject);
+
+	//////////////
+	// Circle
+	// https://threejs.org/docs/index.html#api/en/geometries/CircleGeometry
+	//////////////
+	geometry = new THREE.CircleGeometry( 1, 32 );
+	material = new THREE.MeshBasicMaterial( { color: 0xA69EB0 } );
+	const circle = new THREE.Mesh( geometry, material );
+	scene.add( circle );
+
+
+
+	camera.position.z = 5;
+
+	function animate() {
+		requestAnimationFrame( animate );
+		renderer.render( scene, camera );
+	}
+
+	animate();
+
+</script>
+</body>
+</html>
