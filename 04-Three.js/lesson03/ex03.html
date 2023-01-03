@@ -9,16 +9,13 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script type="module" src="js/FlyControls.js"></script>
-		<script type="module">
-			import {FlyControls} from "./js/FlyControls.js";
-
+		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script>
 			const scene = new THREE.Scene();
-			var ratio = window.innerWidth / window.innerWidth;
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
             const renderer = new THREE.WebGLRenderer();
-			const controls = new FlyControls(camera, renderer.domElement);
-			
+			const controls = new THREE.OrbitControls(camera, renderer.domElement);
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 			window.addEventListener('resize', function() {
@@ -30,15 +27,25 @@
 			});
 
             const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-            const material = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
-            const cube = new THREE.Mesh( geometry, material );
+			const materials = [];
+
+			materials.push(new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('./images/Im1.jpg') }));
+			materials.push(new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('./images/Im2.jpg') }));
+			materials.push(new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('./images/Im3.jpg') }));
+			materials.push(new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('./images/Im4.jpg') }));
+			materials.push(new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('./images/Im5.jpg') }));
+			materials.push(new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('./images/Im6.jpg') }));
+			
+            const cube = new THREE.Mesh( geometry, materials );
             scene.add( cube );
 
             camera.position.z = 5;
 
             function animate() {
 	            requestAnimationFrame( animate );
-				controls.update(5);
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+				controls.update();
 	            renderer.render( scene, camera );
             }
 

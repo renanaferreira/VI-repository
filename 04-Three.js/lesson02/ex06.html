@@ -9,13 +9,15 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-		<script>
+		<script type="module" src="js/OrbitControls.js"></script>
+		<script type="module">
+			import {OrbitControls} from "./js/OrbitControls.js";
+
 			const scene = new THREE.Scene();
 			var ratio = window.innerWidth / window.innerWidth;
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
             const renderer = new THREE.WebGLRenderer();
-			const controls = new THREE.OrbitControls(camera, renderer.domElement);
+			const controls = new OrbitControls(camera, renderer.domElement);
 			
 			
             renderer.setSize( window.innerWidth, window.innerHeight );
@@ -29,7 +31,7 @@
 			});
 			camera.position.z = 5;
 
-            var geometry = new THREE.SphereGeometry(1, 10, 10);
+            const geometry = new THREE.SphereGeometry(1, 10, 10);
             var material = new THREE.MeshPhongMaterial( { 
 				color: '#006063',
 				specular: '#a9fcff',
@@ -40,7 +42,6 @@
 			sphere01.position.x = -2.5;
             scene.add( sphere01 );
 
-			geometry = new THREE.SphereGeometry(1, 10, 10);
 			material = new THREE.MeshPhongMaterial( { 
 				color: '#006063',
 				specular: '#a9fcff',
@@ -52,7 +53,7 @@
             scene.add( sphere02 );
 
 			const light = new THREE.DirectionalLight(0xffffff, 1.0);
-			light.position = new THREE.Vector3(0,5,0);
+			light.position.set(0,5,0);
 			scene.add( light );
 
 			const alight = new THREE.AmbientLight(0xffffff);

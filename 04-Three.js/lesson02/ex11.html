@@ -9,31 +9,16 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-		<script>
-			/*
-			Table of materials
-			*/
-
-			const redPlastic = new THREE.MeshPhongMaterial();
-			redPlastic.color = new THREE.Color(0.5, 0.0, 0.0);
-			redPlastic.specular= new THREE.Color(0.7, 0.6, 0.6);
-			redPlastic.shininess = 0.25 * 256;
-			redPlastic.ambient = new THREE.Color(0.0, 0.0, 0.0);
-
-			const glassMaterial = new THREE.MeshPhongMaterial( { 
-				color: 0x222222, 
-				specular: 0xFFFFFF,
-				shininess: 100, 
-				opacity: 0.3, 
-				transparent: true 
-			} );
+		<script type="module" src="js/OrbitControls.js"></script>
+		<script type="module" src="materials.js"></script>
+		<script type="module">
+			import {OrbitControls} from "./js/OrbitControls.js";
+			import {emerald, redPlastic, whiteRubber, glassMaterial} from "./materials.js";
 
 			const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
             const renderer = new THREE.WebGLRenderer();
-			const controls = new THREE.OrbitControls(camera, renderer.domElement);
-			
+			const controls = new OrbitControls(camera, renderer.domElement);
 			
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
@@ -56,58 +41,69 @@
 			const groupShape = new THREE.Object3D();
 			const radius = 0.5;
 
-            var geometry = new THREE.BoxGeometry(1, 1, 1);
-			const rectangle = new THREE.Mesh( geometry, blueTransparent );
+            const geometryRectangle = new THREE.BoxGeometry(1, 1, 1);
+			const rectangle = new THREE.Mesh( geometryRectangle, blueTransparent );
 			rectangle.scale.set(2,1,4);
 			rectangle.position.set(0,0,0);
 			groupShape.add( rectangle );
 
-			geometry = new THREE.SphereGeometry(radius, 10,10);
+			const geometry = new THREE.SphereGeometry(radius, 10,10);
 			
 			const sphere01 = new THREE.Mesh( geometry, redPlastic );
 			sphere01.position.set(-1, -0.5, -2);
 			groupShape.add( sphere01 );
 
-			//geometry = new THREE.SphereGeometry(radius, 10,10);
 			const sphere02 = new THREE.Mesh( geometry, redPlastic );
 			sphere02.position.set(1, -0.5, -2);
 			groupShape.add( sphere02 );
 
-			//geometry = new THREE.SphereGeometry(radius, 10,10);
 			const sphere03 = new THREE.Mesh( geometry, redPlastic );
 			sphere03.position.set(-1, -0.5, 2);
 			groupShape.add( sphere03 );
 
-			//geometry = new THREE.SphereGeometry(radius, 10,10);
 			const sphere04 = new THREE.Mesh( geometry, redPlastic );
 			sphere04.position.set(1, -0.5, 2);
 			groupShape.add( sphere04 );
 
+			console.log("rectangle matrix");
 			console.log(rectangle.matrix);
-			//[2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1]
-			// scale_x, 3x0, scale_y, 3x0, scale_z, 0, (position), 1
+			//[2, 0, 0, 0, | scaleX, 0, 0, 0
+			// 0, 1, 0, 0, | 0, scaleY, 0, 0
+			// 0, 0, 4, 0, | 0, 0, scaleZ, 0
+			// 0, 0, 0, 1] | Position, 1
+			console.log("rectangle matrix world");
 			console.log(rectangle.matrixWorld);
+			console.log("rectangle model view matrix");
 			console.log(rectangle.modelViewMatrix);
 
 			console.log("------------");
 
+			console.log("sphere 01 matrix");
 			console.log(sphere01.matrix);
-			//[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -1, -0.5, -2, 1]
+			//[1, 0, 0, 0,
+			// 0, 1, 0, 0,
+			// 0, 0, 1, 0, 
+			//-1, -0.5, -2, 1]
 			// scale_x, 3x0, scale_y, 3x0, scale_z, 0, position, 1
+			console.log("sphere 01 world");
 			console.log(sphere01.matrixWorld);
+			console.log("sphere 01 model view matrix");
 			console.log(sphere01.modelViewMatrix);
 
 			console.log("------------");
 
+			console.log("group matrix");
 			console.log(groupShape.matrix);
+			console.log("group world");
 			console.log(groupShape.matrixWorld);
+			console.log("group model view matrix");
 			console.log(groupShape.modelViewMatrix);
 			// # TODO Investigate how Matrix4 work to transform objects;
 			
 			scene.add( groupShape );
 
 			const light = new THREE.DirectionalLight(0xffffff, 1.0);
-			light.position = new THREE.Vector3(0,5,0);
+			light.position.set(0,5,0);
 			scene.add( light );
 
 			const alight = new THREE.AmbientLight(0xffffff);

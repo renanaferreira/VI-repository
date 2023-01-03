@@ -9,36 +9,27 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script type="module" src="js/FlyControls.js"></script>
-		<script type="module">
-			import {FlyControls} from "./js/FlyControls.js";
-
+		<script>
 			const scene = new THREE.Scene();
-			var ratio = window.innerWidth / window.innerWidth;
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
             const renderer = new THREE.WebGLRenderer();
-			const controls = new FlyControls(camera, renderer.domElement);
-			
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
-			window.addEventListener('resize', function() {
-				const width = window.innerWidth;
-				const height = window.innerHeight;
-				renderer.setSize( width, height );
-				camera.aspect = width / height;
-				camera.updateProjectionMatrix();
-			});
 
-            const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-            const material = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
-            const cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
+            const geometry = new THREE.PlaneGeometry( 2, 2 );
+			var texloader = new THREE.TextureLoader();
+			var texture = texloader.load("./images/lena.jpg");
+            const material = new THREE.MeshBasicMaterial( { map: texture } );
+            const plane = new THREE.Mesh( geometry, material );
+            scene.add( plane );
 
             camera.position.z = 5;
 
             function animate() {
 	            requestAnimationFrame( animate );
-				controls.update(5);
+                //plane.rotation.x += 0.01;
+                //plane.rotation.y += 0.01;
 	            renderer.render( scene, camera );
             }
 

@@ -9,35 +9,17 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-		<script>
-			/*
-			Table of materials
-			*/
-			const emerald = new THREE.MeshPhongMaterial({ shading: THREE.SmoothShading });
-			emerald.color = new THREE.Color(0.07568, 0.61424, 0.07568);
-			emerald.specular= new THREE.Color(0.633, 0.7278, 0.633);
-			emerald.shininess = 0.6 * 256;
-			emerald.ambient = new THREE.Color(0.0215, 0.1745, 0.0215);
-
-			const redPlastic = new THREE.MeshPhongMaterial({ shading: THREE.SmoothShading });
-			redPlastic.color = new THREE.Color(0.5, 0.0, 0.0);
-			redPlastic.specular= new THREE.Color(0.7, 0.6, 0.6);
-			redPlastic.shininess = 0.25 * 256;
-			redPlastic.ambient = new THREE.Color(0.0, 0.0, 0.0);
-
-			const whiteRubber = new THREE.MeshPhongMaterial({ shading: THREE.SmoothShading });
-			whiteRubber.color = new THREE.Color(0.5, 0.5, 0.5);
-			whiteRubber.specular= new THREE.Color(0.7, 0.7, 0.7);
-			whiteRubber.shininess = 0.0781 * 256;
-			whiteRubber.ambient = new THREE.Color(0.05, 0.05, 0.05);
+		<script type="module" src="js/OrbitControls.js"></script>
+		<script type="module" src="materials.js"></script>
+		<script type="module">
+			import {OrbitControls} from "./js/OrbitControls.js";
+			import {emerald, redPlastic, whiteRubber} from "./materials.js";
 
 			const scene = new THREE.Scene();
 			var ratio = window.innerWidth / window.innerWidth;
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
             const renderer = new THREE.WebGLRenderer();
-			const controls = new THREE.OrbitControls(camera, renderer.domElement);
-			
+			const controls = new OrbitControls(camera, renderer.domElement);
 			
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
@@ -50,37 +32,29 @@
 			});
 			camera.position.z = 5;
 
-            var geometry = new THREE.SphereGeometry(1, 10, 10);
+            const geometry = new THREE.SphereGeometry(1, 10, 10);
             const sphere01 = new THREE.Mesh( geometry, whiteRubber );
 			sphere01.position.x = -2.5;
             scene.add( sphere01 );
-
-			geometry = new THREE.SphereGeometry(1, 10, 10);
-			material = new THREE.MeshPhongMaterial( { 
-				color: '#006063',
-				specular: '#a9fcff',
-				shininess: 100,
-				flatShading: false,
-			} );
-            const sphere02 = new THREE.Mesh( geometry, material );
+			
+            const sphere02 = new THREE.Mesh( geometry, whiteRubber );
 			sphere02.position.x = 2.5;
             scene.add( sphere02 );
 
 			const redLight = new THREE.DirectionalLight(0xFF0000, 1.0);
-			redLight.position = new THREE.Vector3(-5,0,0);
+			redLight.position.set(-5,0,0);
 			scene.add( redLight );
 
 			const blueLight = new THREE.DirectionalLight(0x0000FF, 1.0);
-			blueLight.position = new THREE.Vector3(5,0,0);
+			blueLight.position.set(5,0,0);
 			scene.add( blueLight );
 
 			const greenLight = new THREE.SpotLight(0x00FF00);
-			greenLight.position = new THREE.Vector3(0,0,-5);
+			greenLight.position.set(0,0,-5);
 			greenLight.target = new THREE.Object3D(-2.5, 0, 0);
 			greenLight.angle = Math.PI/20;
 			scene.add( greenLight );
 			scene.add( greenLight.target );
-
 
 			const alight = new THREE.AmbientLight(0xffffff);
 			scene.add(alight);

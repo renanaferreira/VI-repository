@@ -9,34 +9,23 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script type="module" src="js/OrbitControls.js"></script>
 		<script type="module" src="materials.js"></script>
 		<script type="module">
-			/*
-			Table of materials
-			*/
-			import {redTransparent, blueBasicMaterial, redBasicMaterial, greenBasicMaterial} from "./materials.js";
-
-			const glassMaterial = new THREE.MeshPhongMaterial( { 
-				color: 0x222222, 
-				specular: 0xFFFFFF,
-				shininess: 100, 
-				opacity: 0.3, 
-				transparent: true 
-			} );
-
-			const blueTransparent = new THREE.MeshPhongMaterial({ 
-				color: 0x0000FF,
-				shininess: 100,
-				opacity: 0.3,
-				transparent: true,
-			});
+			import {OrbitControls} from "./js/OrbitControls.js";
+			import {
+				redTransparent, 
+				blueBasicMaterial, 
+				redBasicMaterial, 
+				greenBasicMaterial,
+				glassMaterial,
+				blueTransparent,
+			} from "./materials.js";
 
 			const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
             const renderer = new THREE.WebGLRenderer();
-			const controls = new THREE.OrbitControls(camera, renderer.domElement);
-			
+			const controls = new OrbitControls(camera, renderer.domElement);
 			
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
@@ -48,20 +37,9 @@
 				camera.updateProjectionMatrix();
 			});
 			camera.position.z = 5;
-			
-			const car = new THREE.Object3D();
-
-			const radius = 0.5;
-			const degrees90 = Math.PI / 2;
-
-            var geometry = new THREE.BoxGeometry(1, 1, 1);
-			const rectangle = new THREE.Mesh( geometry, blueTransparent );
-			rectangle.scale.set(2,1,4);
-			rectangle.position.set(0,0,0);
-			car.add( rectangle );
 
 			const axis = new THREE.Object3D();
-			geometry = new THREE.CylinderGeometry(0.1,0.1,2,30);
+			var geometry = new THREE.CylinderGeometry(0.1,0.1,2,30);
 
 			const axisX = new THREE.Mesh( geometry, redBasicMaterial );
 			axisX.position.x = 1;
@@ -77,9 +55,17 @@
 			axisZ.rotation.x = Math.PI / 2;
 			axis.add(axisZ);
 
-			const axesHelper = new THREE.AxesHelper( 5 );
-			scene.add(axesHelper);
+			scene.add(new THREE.AxesHelper( 5 ));
+			
+			const car = new THREE.Object3D();
 
+			const radius = 0.5;
+			const degrees90 = Math.PI / 2;
+
+			const rectangle = new THREE.Mesh( new THREE.BoxGeometry(1, 1, 1), blueTransparent );
+			rectangle.scale.set(2,1,4);
+			rectangle.position.set(0,0,0);
+			car.add( rectangle );
 
 			geometry = new THREE.CylinderGeometry(radius,radius,0.2,30);
 			
@@ -108,6 +94,14 @@
 			// scale_x, 3x0, scale_y, 3x0, scale_z, 0, translation_vector(from O), 1
 			console.log(rectangle.matrixWorld);
 			console.log(rectangle.modelViewMatrix);
+
+			console.log("------------");
+
+			console.log(axisX.matrix);
+			//[2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1]
+			// scale_x, 3x0, scale_y, 3x0, scale_z, 0, translation_vector(from O), 1
+			console.log(axisX.matrixWorld);
+			console.log(axisX.modelViewMatrix);
 
 			console.log("------------");
 

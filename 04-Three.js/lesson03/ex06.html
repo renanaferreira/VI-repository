@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="https://threejs.org/build/three.js"></script>
+		<script type="module" src="js/OrbitControls.js"></script>
+		<script type="module">
+			import {OrbitControls} from "./js/OrbitControls.js";
+
+			const DISTANCE_FROM_EARTH = 356400;
+			const PERIOD = 28;
+			const INCLINATION = 0.089;
+			const SIZE_IN_EARTHS = 1 / 3.7;
+			const EARTH_RADIUS = 6371;
+
+			const lightStep = 0.1;
+			const lightMinimum = 0;
+			const lightMaximum = 1;
+			
+			const rotationMinimum = 0.0025;
+			const rotationMaximum = 0.01;
+			const rotationStep = 0.0025;
+
+			const zInclinationStep = 0.1;
+
+			const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 2000 );
+            const renderer = new THREE.WebGLRenderer();
+			const controls = new OrbitControls(camera, renderer.domElement);
+
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+			window.addEventListener('resize', function() {
+				const width = window.innerWidth;
+				const height = window.innerHeight;
+				renderer.setSize( width, height );
+				camera.aspect = width / height;
+				camera.updateProjectionMatrix();
+			});
+			camera.position.z = 20;
+
+            const geometry = new THREE.SphereGeometry( 1, 32, 32 );
+			const material = new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader().load('./images/earth_surface_2048.jpg') });
+			
+            const earth = new THREE.Mesh( geometry, material );
+			earth.rotation.z = 0.41;
+            scene.add( earth );
+
+			// TODO solve this last problem
+			const moonGeometry = new THREE.SphereGeometry( 1*SIZE_IN_EARTHS, 32, 32 );
+			const moonMaterial = new THREE.MeshPhongMaterial( { 
+				map: new THREE.TextureLoader().load('./images/moon_1024.jpg'),
+				side: THREE.DoubleSide,
+			});
+
+			const moon = new THREE.Mesh( geometry, moonMaterial );
+			var distance = DISTANCE_FROM_EARTH / EARTH_RADIUS;
+			moon.position.set(Math.sqrt(distance / 2), 0,-Math.sqrt(distance / 2));
+			// Rotate the moon so it shows its moon-face toward earth
+			moon.rotation.y = Math.PI;
+			moon.rotation.x = INCLINATION;
+
+			console.log(moon);
+			console.log(camera);
+
+
+            const light = new THREE.DirectionalLight(0xffffff, 1.0);
+			light.position.set(1,0,0);
+			scene.add( light );
+
+			const alight = new THREE.AmbientLight(0x333333);
+			scene.add(alight);
+
+			var rotationSpeed = 0.0025;
+
+            function animate() {
+	            requestAnimationFrame( animate );
+                earth.rotation.y += rotationSpeed;
+				moon.rotation.y += (earth.rotation.y / PERIOD);
+				controls.update();
+	            renderer.render( scene, camera );
+            }
+
+            animate();
+
+			var lighted = true;
+			document.addEventListener("keydown", onDocumentKeyDown, false);
+			function onDocumentKeyDown(event){ 
+				// Get the key code of the pressed key
+				var keyCode = event.which;
+				console.log("tecla " + keyCode);
+				if (keyCode == 76) 
+				{
+					if (lighted) {
+						scene.remove(light);
+					} else {
+						scene.add(light);
+					}
+					lighted = !(lighted);
+				}
+				// Plus key
+				else if (keyCode == 187) 
+				{
+					if (light.intensity < lightMaximum) {
+						var intensity = light.intensity + lightStep;
+						if (intensity < lightMaximum) {
+							light.intensity = intensity;
+						} else {
+							light.intensity = lightMaximum;
+						}
+					}
+				} 
+				// Minus key
+				else if (keyCode == 189) 
+				{
+					if (light.intensity > lightMinimum) {
+						var intensity = light.intensity - lightStep;
+						if (intensity > lightMinimum) {
+							light.intensity = intensity;
+						} else {
+							light.intensity = lightMinimum;
+						}
+					}
+				}
+				// Left arrow
+				else if (keyCode == 37) 
+				{
+					if (rotationSpeed > rotationMinimum) {
+						var newSpeed = rotationSpeed - rotationStep;
+						if (newSpeed > rotationMinimum) {
+							rotationSpeed = newSpeed;
+						} else {
+							rotationSpeed = rotationMinimum;
+						}
+					}
+				}
+				// Right arrow
+				else if (keyCode == 39)
+				{
+					if (rotationSpeed < rotationMaximum) {
+						var newSpeed = rotationSpeed + rotationStep;
+						if (newSpeed < rotationMaximum) {
+							rotationSpeed = newSpeed;
+						} else {
+							rotationSpeed = rotationMaximum;
+						}
+					}
+				}
+				// Up arrow
+				else if (keyCode == 38) 
+				{
+					earth.rotation.z += zInclinationStep;
+				}
+				// Down arrow
+				else if(keyCode == 40) 
+				{
+					earth.rotation.z -= zInclinationStep;
+				}
+			}
+
+		</script>
+	</body>
+</html>
