@@ -30,7 +30,7 @@
 			const zInclinationStep = 0.1;
 
 			const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 2000 );
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
             const renderer = new THREE.WebGLRenderer();
 			const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -43,20 +43,19 @@
 				camera.aspect = width / height;
 				camera.updateProjectionMatrix();
 			});
-			camera.position.z = 20;
+			camera.position.z = 5;
 
             const geometry = new THREE.SphereGeometry( 1, 32, 32 );
 			const material = new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader().load('./images/earth_surface_2048.jpg') });
 			
             const earth = new THREE.Mesh( geometry, material );
 			earth.rotation.z = 0.41;
-            scene.add( earth );
+            
 
 			// TODO solve this last problem
 			const moonGeometry = new THREE.SphereGeometry( 1*SIZE_IN_EARTHS, 32, 32 );
 			const moonMaterial = new THREE.MeshPhongMaterial( { 
 				map: new THREE.TextureLoader().load('./images/moon_1024.jpg'),
-				side: THREE.DoubleSide,
 			});
 
 			const moon = new THREE.Mesh( geometry, moonMaterial );
@@ -65,6 +64,9 @@
 			// Rotate the moon so it shows its moon-face toward earth
 			moon.rotation.y = Math.PI;
 			moon.rotation.x = INCLINATION;
+			earth.add(moon);
+
+			scene.add( earth );
 
 			console.log(moon);
 			console.log(camera);
