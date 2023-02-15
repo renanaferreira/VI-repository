@@ -9,8 +9,15 @@
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-		<script>
+		<script type="module" src="js/OrbitControls.js"></script>
+		<script type="module" src="consts.js"></script>
+		<script type="module">
+			import {OrbitControls} from "./js/OrbitControls.js";
+			import {EARTH_INCLINATION} from "./consts.js";
+			import {KEY_L_LETTER, KEY_PLUS} from "./consts.js";
+
+			const EARTH_SPEED = 0.0025;
+
 			const lightStep = 0.1;
 			const lightMinimum = 0;
 			const lightMaximum = 1;
@@ -24,10 +31,11 @@
 			const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
             const renderer = new THREE.WebGLRenderer();
-			const controls = new THREE.OrbitControls(camera, renderer.domElement);
+			const controls = new OrbitControls(camera, renderer.domElement);
 
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
+			camera.position.z = 5;
 			window.addEventListener('resize', function() {
 				const width = window.innerWidth;
 				const height = window.innerHeight;
@@ -35,42 +43,36 @@
 				camera.aspect = width / height;
 				camera.updateProjectionMatrix();
 			});
-			camera.position.z = 5;
-
-            const geometry = new THREE.SphereGeometry( 1, 32, 32 );
-			const material = new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader().load('./images/earth_surface_2048.jpg') })
-			
-            const sphere = new THREE.Mesh( geometry, material );
-			sphere.rotation.z = 0.41;
-            scene.add( sphere );
-
-            const light = new THREE.DirectionalLight(0xffffff, 1.0);
-			light.position = new THREE.Vector3(1,0,0);
-			scene.add( light );
-
-			const alight = new THREE.AmbientLight(0x333333);
-			scene.add(alight);
-
-
-			
-			var rotationSpeed = 0.0025;
-
-            function animate() {
+			var rotationSpeed = EARTH_SPEED;
+			function animate() {
 	            requestAnimationFrame( animate );
                 sphere.rotation.y += rotationSpeed;
 				controls.update();
 	            renderer.render( scene, camera );
             }
 
+			const light = new THREE.DirectionalLight(0xffffff, 1.0);
+			light.position.set(1,0,0);
+			scene.add( light );
+
+			const alight = new THREE.AmbientLight(0x333333);
+			scene.add(alight);
+
+            const geometry = new THREE.SphereGeometry( 1, 32, 32 );
+			const material = new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader().load('./images/earth_surface_2048.jpg') })
+			
+            const sphere = new THREE.Mesh( geometry, material );
+			sphere.rotation.z = EARTH_INCLINATION;
+            scene.add( sphere );       
+
             animate();
 
 			var lighted = true;
 			document.addEventListener("keydown", onDocumentKeyDown, false);
 			function onDocumentKeyDown(event){ 
-				// Get the key code of the pressed key
 				var keyCode = event.which;
 				console.log("tecla " + keyCode);
-				if (keyCode == 76) 
+				if (keyCode == KEY_L_LETTER) 
 				{
 					if (lighted) {
 						scene.remove(light);
@@ -80,7 +82,7 @@
 					lighted = !(lighted);
 				}
 				// Plus key
-				else if (keyCode == 187) 
+				else if (keyCode == KEY_PLUS) 
 				{
 					if (light.intensity < lightMaximum) {
 						var intensity = light.intensity + lightStep;
